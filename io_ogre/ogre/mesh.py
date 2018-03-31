@@ -650,11 +650,13 @@ def triangle_list_in_group(mesh, shared_vertices, group_index):
 def append_triangle_in_vertex_group(mesh, obj, vertex_groups, ogre_indices, blender_indices):
     vertices = [mesh.vertices[i] for i in blender_indices]
     names = set()
+    keys = obj.vertex_groups.keys()
+
     for v in vertices:
         for g in v.groups:
-            if g.group >= len(obj.vertex_groups):
+            if g.group >= len(keys):
                 return
-            group = obj.vertex_groups.get(g.group)
+            group = obj.vertex_groups.get(keys[g.group])
             if not group.name.startswith("ogre.vertex.group."):
                 return
             names.add(group.name)
