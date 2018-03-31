@@ -284,7 +284,7 @@ class OgreMaterialGenerator(object):
             return
 
         origin_filepath = util.texture_image_path(slot.texture)
-        if origin_filepath == None:
+        if origin_filepath is None:
             return
 
         tmp_filepath = None
@@ -293,26 +293,27 @@ class OgreMaterialGenerator(object):
             # a is a packed png
             origin_filepath = slot.texture.image.filepath
             _, ext = splitext(origin_filepath)
-            tmp_filepath = tempfile.mkstemp(suffix=ext)
-            slot.texture.image.filepath = tmp_filepath 
+            _, tmp_filepath = tempfile.mkstemp(suffix=ext)
+            slot.texture.image.filepath = tmp_filepath
             slot.texture.image.save()
             slot.texture.image.filepath = origin_filepath
+            logging.info("extracted packed image to: %s.", tmp_filepath)
             updated_image = True
 
         _, target_file_ext = split(origin_filepath)
         target_file, ext = splitext(target_file_ext)
+        target_file_ext = self.change_ext(target_file_ext, slot.texture.image)
+        target_filepath = join(target_path, target_file_ext)
 
         if not tmp_filepath:
             _, tmp_filepath = tempfile.mkstemp(suffix=ext)
 
-        target_file_ext = self.change_ext(target_file_ext, slot.texture.image)
-        target_filepath = join(target_path, target_file_ext)
-        if not os.path.isfile(target_filepath):
-            # or os.stat(target_filepath).st_mtime < os.stat( origin_filepath ).st_mtime:
-            updated_image = True
-            shutil.copyfile(origin_filepath, tmp_filepath)
-        else:
-            logging.info("skip copy (%s). texture is already up to date.", origin_filepath)
+            if not os.path.isfile(target_filepath):
+                # or os.stat(target_filepath).st_mtime < os.stat( origin_filepath ).st_mtime:
+                updated_image = True
+                shutil.copyfile(origin_filepath, tmp_filepath)
+            else:
+                logging.info("skip copy (%s). texture is already up to date.", origin_filepath)
 
         if updated_image:
             if is_image_postprocessed(slot.texture.image):
