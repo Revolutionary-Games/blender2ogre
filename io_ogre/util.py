@@ -32,6 +32,8 @@ def xml_converter_version():
     return xml_converter_parameters()[1]
 
 def xml_convert(infile, has_uvs=False):
+    # broken for 2.1 so this is just skipped
+    return
     # todo: Show a UI dialog to show this error. It's pretty fatal for normal usage.
     # We should show how to configure the converter location in config panel or tell the default path.
     exe = config.get('OGRETOOLS_XML_CONVERTER')
